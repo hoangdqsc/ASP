@@ -1,0 +1,188 @@
+
+# **************** XÂY DỰNG 1 DỰ ÁN THEO MÔ HÌNH ONION BẰnG COMMAND ***********************
+
+	# ** Bước 1: Tạo Giải Pháp (Solution) **	
+		
+mkdir template_Onion
+	cd template_Onion		
+	dotnet new sln -n onion_V1
+	
+	# ** Bước 1: Create folder ShareLibrary, dùng chung **
+	mkdir ShareLibrary
+		cd ShareLibrary
+			# ** Bước 2: Trong ShareLibrary chúng ta tạo mô hinh onion lõi **
+		mkdir Core
+			cd Core
+			dotnet new classlib -n Core_Temp -f net6.0 --no-restore
+				cd Core_Temp
+				mkdir Entities
+				mkdir Interfaces
+		cd ../..				
+
+		mkdir Application
+			cd Application
+			dotnet new classlib -n Application_Temp -f net6.0
+				cd Application_Temp
+				mkdir Services
+				mkdir DTOs
+		cd ../..			
+
+		mkdir Infrastructure
+			cd Infrastructure
+			dotnet new classlib -n Infrastructure_Temp -f net6.0
+				cd Infrastructure_Temp
+				mkdir Data
+				mkdir Repositories
+				mkdir Models	
+		cd ../..
+
+		mkdir Tests
+			cd Tests
+			dotnet new xunit -n Tests_UnitTests -f net6.0
+			dotnet new xunit -n Tests_IntegrationTests -f net6.0
+			dotnet new xunit -n Tests_FunctionalTests -f net6.0
+	cd ../..
+
+	mkdir Project_API
+		cd Project_API
+		dotnet new webapi -n WebApi_Temp -f net6.0
+	cd ..
+
+	# ====================NuGet cho các tầng =============================================
+	
+		# 2. Cài Đặt Các Gói NuGet Cần Thiết vào Dự Án Shared_Libraries
+				cd ShareLibrary/Infrastructure/Infrastructure_Temp
+				dotnet add package Microsoft.EntityFrameworkCore --version 7.0.14
+				dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 7.0.14
+				dotnet add package Microsoft.EntityFrameworkCore.Design --version 7.0.14
+				dotnet add package Microsoft.EntityFrameworkCore.Tools --version 7.0.14
+				dotnet restore
+	cd ../../..
+
+			cd Project_API/WebApi_Temp
+			dotnet add package Microsoft.EntityFrameworkCore --version 7.0.14
+			dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 7.0.14
+			dotnet add package Microsoft.EntityFrameworkCore.Tools --version 7.0.14
+			dotnet restore
+	cd ../..
+
+	# Bước 3: Thêm Các Dự Án vào Giải Pháp
+
+	dotnet sln add ShareLibrary/Core/Core_Temp/Core_Temp.csproj
+	dotnet sln add ShareLibrary/Application/Application_Temp/Application_Temp.csproj
+	dotnet sln add ShareLibrary/Infrastructure/Infrastructure_Temp/Infrastructure_Temp.csproj
+	dotnet sln add Project_API/WebApi_Temp/WebApi_Temp.csproj
+	dotnet sln add ShareLibrary/Tests/Tests_UnitTests/Tests_UnitTests.csproj
+	dotnet sln add ShareLibrary/Tests/Tests_IntegrationTests/Tests_IntegrationTests.csproj
+	dotnet sln add ShareLibrary/Tests/Tests_FunctionalTests/Tests_FunctionalTests.csproj
+
+	# Bước 4: Thêm các tham chiếu các tầng liên quan với nhau
+				# Di chuyển vào thư mục dự án Application_Temp
+				cd ShareLibrary/Application/Application_Temp
+				# Thêm tham chiếu đến Core_Temp
+				dotnet add reference ../../Core/Core_Temp/Core_Temp.csproj		
+		cd ../..
+
+				# Di chuyển vào thư mục Infrastructure_Temp
+				cd Infrastructure\Infrastructure_Temp
+				# Thêm tham chiếu đến Core_Temp
+				dotnet add reference ../../Core/Core_Temp/Core_Temp.csproj
+				# Thêm tham chiếu đến Application_Temp
+				dotnet add reference ../../Application/Application_Temp/Application_Temp.csproj
+	cd ../../..
+			# Di chuyển vào thư mục WebApi_Temp
+			cd Project_API/WebApi_Temp
+			# Thêm tham chiếu đến Application_Temp
+			dotnet add reference ../../ShareLibrary/Application/Application_Temp/Application_Temp.csproj
+			# Thêm tham chiếu đến Infrastructure_Temp
+			dotnet add reference ../../ShareLibrary/Infrastructure/Infrastructure_Temp/Infrastructure_Temp.csproj
+	cd ../..
+			# Di chuyển vào thư mục Tests_FunctionalTests
+			cd ShareLibrary\Tests\Tests_FunctionalTests
+			# Thêm tham chiếu đến Application_Temp
+			dotnet add reference ../../Application/Application_Temp/Application_Temp.csproj
+			# Thêm tham chiếu đến Core_Temp
+			dotnet add reference ../../Core/Core_Temp/Core_Temp.csproj
+	cd ../../..
+	
+	# 1. Cài công cụ tool toàn cục để chạy migration
+	dotnet tool install --global dotnet-ef --version 7.0.14
+	dotnet restore
+		
+	dotnet build 
+
+	
+		
+# ====================================================================================
+
+	
+<# 
+    #2. Chạy lệnh để tạo migration 
+	# Chạy lệnh dotnet ef migrations add để tạo migration mới. Bạn cần chỉ định dự án chứa DbContext (Infrastructure) và dự án khởi động (API).
+	#	-p chỉ định đường dẫn tới dự án chứa DbContext (SharedLibrary.Infrastructure).
+	#	-s chỉ định đường dẫn tới dự án khởi động (ProjectA.API).
+	dotnet ef migrations add InitialCreate -p ShareLibrary/Infrastructure/Infrastructure_Temp/Infrastructure_Temp.csproj -s Project_API/WebApi_Temp/WebApi_Temp.csproj
+ 
+	# 3. Chạy lệnh để áp dụng migration
+	dotnet ef database update -p ShareLibrary/Infrastructure/Infrastructure_Temp/Infrastructure_Temp.csproj -s Project_API/WebApi_Temp/WebApi_Temp.csproj
+	
+	# build để xác nhận dự án
+	
+		dotnet build 
+  
+
+Temp_Onion/
+│
+├── ShareLibrary/
+│   ├── Core/
+│   │   └── Core_Temp/
+│   │       ├── Core_Temp.csproj
+│   │       └── Entities/
+│   │           ├── Temp.cs
+│   │           └── (other entity classes...)
+│   │       └── Interfaces/
+│   │           ├── ITempRepository.cs
+│   │           └── (other interface classes...)
+│   │
+│   ├── Application/
+│   │   └── Application_Temp/
+│   │       ├── Application_Temp.csproj
+│   │       └── Services/
+│   │           ├── TempService.cs
+│   │           └── (other service classes...)
+│   │
+│   ├── Infrastructure/
+│   │   └── Infrastructure_Temp/
+│   │       ├── Infrastructure_Temp.csproj
+│   │       ├── Data/
+│   │       │   └── ApplicationDbContext.cs
+│   │       ├── Repositories/
+│   │       │   ├── TempRepository.cs
+│   │       │   └── (other repository classes...)
+│   │       └── Models/
+│   │           ├── (scaffolded entity classes...)
+│   │
+│   └── Tests/
+│       ├── Tests_UnitTests/
+│       │   ├── Tests_UnitTests.csproj
+│       │   └── (unit test classes...)
+│       │
+│       ├── Tests_IntegrationTests/
+│       │   ├── Tests_IntegrationTests.csproj
+│       │   └── (integration test classes...)
+│       │
+│       └── Tests_FunctionalTests/
+│           ├── Tests_FunctionalTests.csproj
+│           └── (functional test classes...)
+│
+├── Project_API/
+│   └── WebApi_Temp/
+│       ├── WebApi_Temp.csproj
+│       ├── Controllers/
+│       │   ├── TempsController.cs
+│       │   └── (other controller classes...)
+│       └── appsettings.json
+│
+└── UJUTN.sln
+
+#>
