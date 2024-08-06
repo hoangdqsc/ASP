@@ -111,6 +111,35 @@ mkdir template_Onion
 		
 	dotnet build 
 
+<#
+Một số folder trống khi mở visual stuadio sẽ không nhìn thấy
+Giải pháp là chèn 1 file trống vào thư mục đó thì sẽ ok
+# Di chuyển đến thư mục dự án chính
+cd path\to\your\project
+
+# Tạo file .gitkeep trong các thư mục trống
+$folders = @(
+    ".\ShareLibrary\Core\Core_Book\Entities",
+    ".\ShareLibrary\Core\Core_Book\Interfaces",
+    ".\ShareLibrary\Application\Application_Book\Services",
+    ".\ShareLibrary\Application\Application_Book\DTOs",
+    ".\ShareLibrary\Application\Application_Book\Helpers",
+    ".\ShareLibrary\Infrastructure\Infrastructure_Book\Data",
+    ".\ShareLibrary\Infrastructure\Infrastructure_Book\Repositories",
+    ".\ShareLibrary\Infrastructure\Infrastructure_Book\Models"
+)
+
+foreach ($folder in $folders) {
+    New-Item -ItemType File -Path "$folder\.gitkeep" -Force
+}
+# Vậy là ok
+# nếu muốn sau này xóa all các file này đi thì làm như sau 
+# Di chuyển đến thư mục dự án chính
+cd path\to\your\project
+
+# Tìm và xóa tất cả các file .gitkeep
+Get-ChildItem -Path . -Filter .gitkeep -Recurse | Remove-Item -Force
+#>
 	
 		
 # ====================================================================================
