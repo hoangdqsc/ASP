@@ -18,6 +18,16 @@ namespace Application_Temp.Helpers
             }
         }
 
+        public static bool IsValidPassword(string password, string hashedPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool IsValidPassword(string password, object hashedPassword)
+        {
+            throw new NotImplementedException();
+        }
+
         // Kiểm tra tính hợp lệ của mật khẩu mới
         public static bool ValidateNewPassword(string password)
         {
