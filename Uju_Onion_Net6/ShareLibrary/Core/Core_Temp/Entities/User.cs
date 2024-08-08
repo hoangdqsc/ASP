@@ -12,5 +12,6 @@ namespace Core_Temp.Entites
         public string Name { get; set; }
         public string Email { get; set; } // Xác nhận rằng thuộc tính Email tồn tại
         public string PasswordHash { get; set; }
+         public string Roles { get; set; }
     }
 }
