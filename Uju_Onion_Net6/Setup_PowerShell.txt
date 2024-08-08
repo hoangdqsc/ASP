@@ -3,9 +3,9 @@
 
 	# ** Bước 1: Tạo Giải Pháp (Solution) **	
 		
-mkdir template_Onion
-	cd template_Onion		
-	dotnet new sln -n onion_V1
+mkdir template_Onion_hoang
+	cd template_Onion_hoang		
+	dotnet new sln -n onion_hoang
 	
 	# ** Bước 1: Create folder ShareLibrary, dùng chung **
 	mkdir ShareLibrary
@@ -17,14 +17,33 @@ mkdir template_Onion
 				cd Core_Temp
 				mkdir Entities
 				mkdir Interfaces
+				
+				# Tạo các tệp .cs trong Core Layer
+				New-Item -Path "Entities/User.cs" -ItemType "file"
+				New-Item -Path "Entities/Book.cs" -ItemType "file"
+				New-Item -Path "Interfaces/IRepository.cs" -ItemType "file"
+				New-Item -Path "Interfaces/IUserRepository.cs" -ItemType "file"
+				New-Item -Path "Interfaces/IBookRepository.cs" -ItemType "file"				
+					
 		cd ../..				
 
 		mkdir Application
 			cd Application
 			dotnet new classlib -n Application_Temp -f net6.0
 				cd Application_Temp
-				mkdir Services
 				mkdir DTOs
+				mkdir Helpers
+				mkdir Interfaces
+				mkdir Services
+				
+				# Tạo các tệp .cs trong Application Layer
+				New-Item -Path "DTOs/UserDto.cs" -ItemType "file"
+				New-Item -Path "DTOs/BookDto.cs" -ItemType "file"
+				New-Item -Path "Helpers/PasswordHelper.cs" -ItemType "file"
+				New-Item -Path "Interfaces/IUserService.cs" -ItemType "file"
+				New-Item -Path "Interfaces/IBookService.cs" -ItemType "file"
+				New-Item -Path "Services/UserService.cs" -ItemType "file"
+				New-Item -Path "Services/BookService.cs" -ItemType "file"
 		cd ../..			
 
 		mkdir Infrastructure
@@ -33,7 +52,13 @@ mkdir template_Onion
 				cd Infrastructure_Temp
 				mkdir Data
 				mkdir Repositories
-				mkdir Models	
+				mkdir Extensions
+
+				# Tạo các tệp .cs trong Infrastructure Layer
+				New-Item -Path "Data/ApplicationDbContext.cs" -ItemType "file"
+				New-Item -Path "Repositories/UserRepository.cs" -ItemType "file"
+				New-Item -Path "Repositories/BookRepository.cs" -ItemType "file"
+				New-Item -Path "Extensions/ServiceCollectionExtensions.cs" -ItemType "file"
 		cd ../..
 
 		mkdir Tests
@@ -105,6 +130,49 @@ mkdir template_Onion
 			dotnet add reference ../../Core/Core_Temp/Core_Temp.csproj
 	cd ../../..
 	
+	# ***************************** TẢI FILE VỀ DỰ ÁN ********************************************
+	
+	# Định nghĩa đường dẫn cơ bản
+	$basePath = "D:\ASP\m\template_Onion_hoang"
+
+	# Định nghĩa đường dẫn chi tiết cho từng thư mục
+	$paths = @{
+    "Core" = "ShareLibrary\Core\Core_Temp"
+    "App" = "ShareLibrary\Application\Application_Temp"
+    "Infras" = "ShareLibrary\Infrastructure\Infrastructure_Temp"
+    "WebApi_Temp" = "Project_API\WebApi_Temp"
+	}
+
+	# Danh sách các URL của các tệp cần tải, với đường dẫn chi tiết
+	$files = @{
+		"Core\Entities\User.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Entities/User.cs"
+		"Core\Entities\Book.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Entities/Book.cs"		
+		"Core\Interfaces\IRepository.cs" ="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IRepository.cs"
+		"Core\Interfaces\IUserRepository.cs" ="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IUserRepository.cs"
+		"Core\Interfaces\IBookRepository.cs" ="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IBookRepository.cs"
+		
+	}
+
+	# Tải từng tệp và lưu vào thư mục tương ứng
+	foreach ($filePath in $files.Keys) {
+		$url = $files[$filePath]
+		# Tạo đường dẫn đầy đủ cho từng tệp
+		$outputPath = [System.IO.Path]::Combine($basePath, $paths[[System.IO.Path]::GetDirectoryName($filePath)], [System.IO.Path]::GetFileName($filePath))
+
+		# Tạo thư mục nếu chưa tồn tại
+		$directory = [System.IO.Path]::GetDirectoryName($outputPath)
+		if (-not (Test-Path $directory)) {
+			New-Item -Path $directory -ItemType Directory -Force
+		}
+
+    # Tải tệp và lưu vào thư mục tương ứng
+    Invoke-WebRequest -Uri $url -OutFile $outputPath
+	}
+	
+	# ********************************* END TẢI FILE *************************************************
+	
+	
+	
 	# 1. Cài công cụ tool toàn cục để chạy migration
 	dotnet tool install --global dotnet-ef --version 7.0.14
 	dotnet restore
@@ -167,18 +235,27 @@ Temp_Onion/
 │   │   └── Core_Temp/
 │   │       ├── Core_Temp.csproj
 │   │       └── Entities/
-│   │           ├── Temp.cs
-│   │           └── (other entity classes...)
+│   │           ├── User.cs
+│   │           └── Book.cs
 │   │       └── Interfaces/
-│   │           ├── ITempRepository.cs
-│   │           └── (other interface classes...)
+│   │           ├── IRepository.cs
+│   │           └── IUserRepository.cs
+│   │           └── IBookRepository.cs
 │   │
 │   ├── Application/
 │   │   └── Application_Temp/
 │   │       ├── Application_Temp.csproj
+│   │       └── DTOs/
+│   │           ├── UserDto.cs
+│   │           └── BookDto.cs
+│   │       └── Helpers/
+│   │           └── PasswordHelper.cs
+│   │       └── Interfaces/
+│   │           ├── IUserService.cs
+│   │           └── IBookService.cs
 │   │       └── Services/
-│   │           ├── TempService.cs
-│   │           └── (other service classes...)
+│   │           ├── UserService.cs
+│   │           └── BookService.cs
 │   │
 │   ├── Infrastructure/
 │   │   └── Infrastructure_Temp/
@@ -186,10 +263,10 @@ Temp_Onion/
 │   │       ├── Data/
 │   │       │   └── ApplicationDbContext.cs
 │   │       ├── Repositories/
-│   │       │   ├── TempRepository.cs
-│   │       │   └── (other repository classes...)
-│   │       └── Models/
-│   │           ├── (scaffolded entity classes...)
+│   │       │   ├── UserRepository.cs
+│   │       │   └── BookRepository.cs
+│   │       └── Extensions/
+│   │           └── ServiceCollectionExtensions.cs
 │   │
 │   └── Tests/
 │       ├── Tests_UnitTests/
@@ -208,10 +285,11 @@ Temp_Onion/
 │   └── WebApi_Temp/
 │       ├── WebApi_Temp.csproj
 │       ├── Controllers/
-│       │   ├── TempsController.cs
-│       │   └── (other controller classes...)
+│       │   ├── UsersController.cs
+│       │   └── BooksController.cs
 │       └── appsettings.json
 │
 └── UJUTN.sln
+
 
 #>
