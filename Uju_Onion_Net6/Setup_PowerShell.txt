@@ -167,8 +167,7 @@ mkdir template_Onion_hoang
 		"Core\Entities\Book.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Entities/Book.cs"
 		"Core\Interfaces\IRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IRepository.cs"
 		"Core\Interfaces\IUserRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IUserRepository.cs"
-		"Core\Interfaces\IBookRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IBookRepository.cs"
-		"Core\Interfaces\IBookRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IBookRepository.cs"
+		"Core\Interfaces\IBookRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IBookRepository.cs"	
 
 		"App\DTOs\UserDto.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/DTOs/UserDto.cs"
 		"App\DTOs\BookDto.cs"="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/DTOs/BookDto.cs"
@@ -214,8 +213,7 @@ mkdir template_Onion_hoang
 	
 	# ********************************* END TẢI FILE *************************************************
 	
-	
-	
+		
 	# 1. Cài công cụ tool toàn cục để chạy migration
 	dotnet tool install --global dotnet-ef --version 7.0.14
 	dotnet restore
@@ -252,9 +250,7 @@ cd path\to\your\project
 Get-ChildItem -Path . -Filter .gitkeep -Recurse | Remove-Item -Force
 #>
 	
-		
 # ====================================================================================
-
 	
 <# 
     #2. Chạy lệnh để tạo migration 
