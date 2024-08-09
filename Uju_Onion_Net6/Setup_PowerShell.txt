@@ -17,14 +17,14 @@ mkdir template_Onion_hoang
 				cd Core_Temp
 				mkdir Entities
 				mkdir Interfaces
-				
+				<#
 				# Tạo các tệp .cs trong Core Layer
 				New-Item -Path "Entities/User.cs" -ItemType "file"
 				New-Item -Path "Entities/Book.cs" -ItemType "file"
 				New-Item -Path "Interfaces/IRepository.cs" -ItemType "file"
 				New-Item -Path "Interfaces/IUserRepository.cs" -ItemType "file"
 				New-Item -Path "Interfaces/IBookRepository.cs" -ItemType "file"				
-					
+				#>	
 		cd ../..				
 
 		mkdir Application
@@ -36,6 +36,7 @@ mkdir template_Onion_hoang
 				mkdir Interfaces
 				mkdir Services
 				
+				<#
 				# Tạo các tệp .cs trong Application Layer
 				New-Item -Path "DTOs/UserDto.cs" -ItemType "file"
 				New-Item -Path "DTOs/BookDto.cs" -ItemType "file"
@@ -44,6 +45,7 @@ mkdir template_Onion_hoang
 				New-Item -Path "Interfaces/IBookService.cs" -ItemType "file"
 				New-Item -Path "Services/UserService.cs" -ItemType "file"
 				New-Item -Path "Services/BookService.cs" -ItemType "file"
+				#>
 		cd ../..			
 
 		mkdir Infrastructure
@@ -53,12 +55,13 @@ mkdir template_Onion_hoang
 				mkdir Data
 				mkdir Repositories
 				mkdir Extensions
-
+				<#
 				# Tạo các tệp .cs trong Infrastructure Layer
 				New-Item -Path "Data/ApplicationDbContext.cs" -ItemType "file"
 				New-Item -Path "Repositories/UserRepository.cs" -ItemType "file"
 				New-Item -Path "Repositories/BookRepository.cs" -ItemType "file"
 				New-Item -Path "Extensions/ServiceCollectionExtensions.cs" -ItemType "file"
+				#>
 		cd ../..
 
 		mkdir Tests
@@ -75,15 +78,28 @@ mkdir template_Onion_hoang
 
 	# ====================NuGet cho các tầng =============================================
 	
-		# 2. Cài Đặt Các Gói NuGet Cần Thiết vào Dự Án Shared_Libraries
+				# 1. Cài Đặt Các Gói NuGet Infrastructure
+				
 				cd ShareLibrary/Infrastructure/Infrastructure_Temp
 				dotnet add package Microsoft.EntityFrameworkCore --version 7.0.14
 				dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 7.0.14
 				dotnet add package Microsoft.EntityFrameworkCore.Design --version 7.0.14
 				dotnet add package Microsoft.EntityFrameworkCore.Tools --version 7.0.14
+				dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection --version 12.0.0
+				dotnet add package FluentValidation.AspNetCore --version 11.0.0
+				dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 6.0.0								
 				dotnet restore
 	cd ../../..
-
+				# 2. Cài Đặt Các Gói NuGet Application
+				
+				cd ShareLibrary/Application/Application_Temp
+				dotnet add package System.IdentityModel.Tokens.Jwt --version 5.7.0
+				dotnet add package FluentValidation.AspNetCore --version 11.0.0
+				dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection --version 12.0.0
+				dotnet restore
+	cd ../../..
+				# 2. Cài Đặt Các Gói NuGet Project_API
+			
 			cd Project_API/WebApi_Temp
 			dotnet add package Microsoft.EntityFrameworkCore --version 7.0.14
 			dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 7.0.14
@@ -121,6 +137,8 @@ mkdir template_Onion_hoang
 			dotnet add reference ../../ShareLibrary/Application/Application_Temp/Application_Temp.csproj
 			# Thêm tham chiếu đến Infrastructure_Temp
 			dotnet add reference ../../ShareLibrary/Infrastructure/Infrastructure_Temp/Infrastructure_Temp.csproj
+			# Thêm tham chiếu đến Core_Temp
+			dotnet add reference ../../Core/Core_Temp/Core_Temp.csproj
 	cd ../..
 			# Di chuyển vào thư mục Tests_FunctionalTests
 			cd ShareLibrary\Tests\Tests_FunctionalTests
@@ -146,11 +164,36 @@ mkdir template_Onion_hoang
 	# Danh sách các URL của các tệp cần tải, với đường dẫn chi tiết
 	$files = @{
 		"Core\Entities\User.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Entities/User.cs"
-		"Core\Entities\Book.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Entities/Book.cs"		
-		"Core\Interfaces\IRepository.cs" ="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IRepository.cs"
-		"Core\Interfaces\IUserRepository.cs" ="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IUserRepository.cs"
-		"Core\Interfaces\IBookRepository.cs" ="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IBookRepository.cs"
-		
+		"Core\Entities\Book.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Entities/Book.cs"
+		"Core\Interfaces\IRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IRepository.cs"
+		"Core\Interfaces\IUserRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IUserRepository.cs"
+		"Core\Interfaces\IBookRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IBookRepository.cs"
+		"Core\Interfaces\IBookRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Core/Core_Temp/Interfaces/IBookRepository.cs"
+
+		"App\DTOs\UserDto.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/DTOs/UserDto.cs"
+		"App\DTOs\BookDto.cs"="https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/DTOs/BookDto.cs"
+		"App\Services\UserService.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/Services/UserService.cs"
+		"App\Services\UserDtoService.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/Services/UserDtoService.cs"
+		"App\Services\BookService.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/Services/BookService.cs"
+		"App\Interfaces\IUserService.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/Interfaces/IUserService.cs"
+		"App\Interfaces\IBookService.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/Interfaces/IBookService.cs"
+		"App\Helpers\PasswordHelper.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/Helpers/PasswordHelper.cs"
+		"App\Helpers\TokenHelper.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/Helpers/TokenHelper.cs"
+		"App\AutoMapper\UserMap.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Application/Application_Temp/AutoMapper/UserMap.cs"
+
+		"Infras\Data\ApplicationDbContext.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Infrastructure/Infrastructure_Tem/Data/ApplicationDbContext.cs"
+		"Infras\Extensions\ServiceCollectionExtensions.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Infrastructure/Infrastructure_Tem/Extensions/ServiceCollectionExtensions.cs"
+		"Infras\Extensions\SeedData.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Infrastructure/Infrastructure_Tem/Extensions/SeedData.cs"
+		"Infras\Repositories\Repository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Infrastructure/Infrastructure_Tem/Repositories/Repository.cs"
+		"Infras\Repositories\UserRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Infrastructure/Infrastructure_Tem/Repositories/UserRepository.cs"
+		"Infras\Repositories\BookRepository.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/ShareLibrary/Infrastructure/Infrastructure_Tem/Repositories/BookRepository.cs"
+
+		"WebApi_Temp\JwtSettings.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/WebAPI/WebAPI_Temp/JwtSettings.cs"
+		"WebApi_Temp\appsettings.json" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/WebAPI/WebAPI_Temp/appsettings.json"
+		"WebApi_Temp\program.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/WebAPI/WebAPI_Temp/program.cs"
+		"WebApi_Temp\Controller\AuthController.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/WebAPI/WebAPI_Temp/Controller/AuthController.cs"
+		"WebApi_Temp\Controller\BooksController.cs" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/WebAPI/WebAPI_Temp/Controller/BooksController.cs"
+		"WebApi_Temp\Controller\" = "https://raw.githubusercontent.com/hoangdqsc/ASP/main/Uju_Onion_Net6/WebAPI/WebAPI_Temp/Controller/UsersController"
 	}
 
 	# Tải từng tệp và lưu vào thư mục tương ứng
@@ -165,8 +208,8 @@ mkdir template_Onion_hoang
 			New-Item -Path $directory -ItemType Directory -Force
 		}
 
-    # Tải tệp và lưu vào thư mục tương ứng
-    Invoke-WebRequest -Uri $url -OutFile $outputPath
+		# Tải tệp và lưu vào thư mục tương ứng
+		Invoke-WebRequest -Uri $url -OutFile $outputPath
 	}
 	
 	# ********************************* END TẢI FILE *************************************************
@@ -228,68 +271,78 @@ Get-ChildItem -Path . -Filter .gitkeep -Recurse | Remove-Item -Force
 		dotnet build 
   
 
-Temp_Onion/
-│
-├── ShareLibrary/
-│   ├── Core/
-│   │   └── Core_Temp/
-│   │       ├── Core_Temp.csproj
-│   │       └── Entities/
-│   │           ├── User.cs
-│   │           └── Book.cs
-│   │       └── Interfaces/
-│   │           ├── IRepository.cs
-│   │           └── IUserRepository.cs
-│   │           └── IBookRepository.cs
-│   │
-│   ├── Application/
-│   │   └── Application_Temp/
-│   │       ├── Application_Temp.csproj
-│   │       └── DTOs/
-│   │           ├── UserDto.cs
-│   │           └── BookDto.cs
-│   │       └── Helpers/
-│   │           └── PasswordHelper.cs
-│   │       └── Interfaces/
-│   │           ├── IUserService.cs
-│   │           └── IBookService.cs
-│   │       └── Services/
-│   │           ├── UserService.cs
-│   │           └── BookService.cs
-│   │
-│   ├── Infrastructure/
-│   │   └── Infrastructure_Temp/
-│   │       ├── Infrastructure_Temp.csproj
-│   │       ├── Data/
-│   │       │   └── ApplicationDbContext.cs
-│   │       ├── Repositories/
-│   │       │   ├── UserRepository.cs
-│   │       │   └── BookRepository.cs
-│   │       └── Extensions/
-│   │           └── ServiceCollectionExtensions.cs
-│   │
-│   └── Tests/
-│       ├── Tests_UnitTests/
-│       │   ├── Tests_UnitTests.csproj
-│       │   └── (unit test classes...)
-│       │
-│       ├── Tests_IntegrationTests/
-│       │   ├── Tests_IntegrationTests.csproj
-│       │   └── (integration test classes...)
-│       │
-│       └── Tests_FunctionalTests/
-│           ├── Tests_FunctionalTests.csproj
-│           └── (functional test classes...)
-│
-├── Project_API/
-│   └── WebApi_Temp/
-│       ├── WebApi_Temp.csproj
-│       ├── Controllers/
-│       │   ├── UsersController.cs
-│       │   └── BooksController.cs
-│       └── appsettings.json
-│
-└── UJUTN.sln
+	Temp_Onion/
+	│
+	├── ShareLibrary/
+	│   ├── Core/
+	│   │   └── Core_Temp/
+	│   │       ├── Core_Temp.csproj
+	│   │       └── Entities/
+	│   │           ├── User.cs
+	│   │           └── Book.cs
+	│   │       └── Interfaces/
+	│   │           ├── IRepository.cs
+	│   │           └── IUserRepository.cs
+	│   │           └── IBookRepository.cs
+	│   │
+	│   ├── Application/
+	│   │   └── Application_Temp/
+	│   │       ├── Application_Temp.csproj
+	│   │       └── DTOs/
+	│   │           ├── UserDto.cs
+	│   │           └── BookDto.cs
+	│   │       └── Helpers/
+	│   │           └── PasswordHelper.cs
+	│   │           └── TokenHelper.cs
+	│   │       └── AutoMapper/
+	│   │           └── UserMap.cs	
+	│   │       └── Interfaces/
+	│   │           ├── IUserService.cs
+	│   │           └── IBookService.cs
+	│   │       └── Services/
+	│   │           ├── UserService.cs
+	│   │           └── BookService.cs
+	│   │       └── Interfaces/
+	│   │           ├── IUserService.cs
+	│   │           └── IBookService.cs
+	│   │
+	│   ├── Infrastructure/
+	│   │   └── Infrastructure_Temp/
+	│   │       ├── Infrastructure_Temp.csproj
+	│   │       ├── Data/
+	│   │       │   └── ApplicationDbContext.cs
+	│   │       ├── Repositories/
+	│   │       │   ├── UserRepository.cs
+	│   │       │   └── BookRepository.cs
+	│   │       │   └── Repository.cs
+	│   │       └── Extensions/
+	│   │           └── SeedData.cs
+	│   │           └── JwtSettings.cs
+	│   │           └── ServiceCollectionExtensions.cs
+	│   │
+	│   └── Tests/
+	│       ├── Tests_UnitTests/
+	│       │   ├── Tests_UnitTests.csproj
+	│       │   └── (unit test classes...)
+	│       │
+	│       ├── Tests_IntegrationTests/
+	│       │   ├── Tests_IntegrationTests.csproj
+	│       │   └── (integration test classes...)
+	│       │
+	│       └── Tests_FunctionalTests/
+	│           ├── Tests_FunctionalTests.csproj
+	│           └── (functional test classes...)
+	│
+	├── Project_API/
+	│   └── WebApi_Temp/
+	│       ├── WebApi_Temp.csproj
+	│       ├── Controllers/
+	│       │   ├── UsersController.cs
+	│       │   └── BooksController.cs
+	│       └── appsettings.json
+	│       └── program.cs
+	│
+	└── UJUTN.sln
 
 
 #>
