@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace Application_Temp.Extentions
                 return (T)serializer.Deserialize(stringReader);
             }
         }
+
         /// <summary>
         /// Chuyển đổi đối tượng kiểu T thành chuỗi XML.
         /// </summary>
@@ -48,3 +50,62 @@ namespace Application_Temp.Extentions
         }
     }
 }
+/*
+1 //Cấu hình trong Program.cs
+// Đối với ASP.NET Core 6+
+var builder = WebApplication.CreateBuilder(args);
+
+// Thêm dịch vụ hỗ trợ XML
+builder.Services.AddControllers()
+    .AddXmlSerializerFormatters();
+
+var app = builder.Build();
+
+2. Sử Dụng Các Phương Thức Mở Rộng
+Sau khi bạn đã tạo lớp tiện ích, bạn có thể sử dụng các phương thức mở rộng này trong các controller
+của bạn để chuyển đổi dữ liệu giữa XML và đối tượng.
+
+using Microsoft.AspNetCore.Mvc;
+using YourNamespace; // Thay thế bằng namespace của bạn
+
+
+namespace YourApi.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BooksController : ControllerBase
+    {
+        [HttpPost]
+        [Route("create")]
+        public IActionResult CreateBook([FromBody] string xmlBook)
+        {
+            try
+            {
+                var bookDto = xmlBook.FromXml<BookDto>(); // Chuyển đổi từ XML thành BookDto
+                // Xử lý logic tạo sách với bookDto
+                return Ok("Book created successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("get")]
+        public IActionResult GetBook()
+        {
+            var bookDto = new BookDto
+            {
+                Id = 1,
+                Title = "Sample Book",
+                Author = "Author Name"
+            };
+            var xml = bookDto.ToXml(); // Chuyển đổi từ BookDto thành XML
+            return Content(xml, "application/xml");
+        }
+    }
+}
+
+
+*/
