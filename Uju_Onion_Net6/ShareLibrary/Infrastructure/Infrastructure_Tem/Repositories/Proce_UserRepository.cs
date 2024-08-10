@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure_Temp.Repositories
 {
-    public class User_procedure_Repository : IUserRepository
+    public class Proce_UserRepository. : IUserRepository
     {
 
         private readonly ApplicationDbContext _context;
