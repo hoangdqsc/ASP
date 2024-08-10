@@ -9,10 +9,15 @@ namespace Core_Temp.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-        // Thêm các phương thức riêng nếu cần
-        Task<User> GetByUsernameAsync(string username);
-        Task<User> GetUserByEmailAsync(string email);
-        Task<User> ValidateUserAsync(string username, string password)
+        Task<User> GetByUsernameAsync(string username);        
+              
+        // Các phương thức đặc thù cho User để tác động database dùng procdure      
+        Task<IEnumerable<User>> Proce_GetAll_User();
+        Task<User> GetBProce_GetBtyId_User(int id);
+        Task Proce_Add_User(User user);
+        Task Proce_Update_User(User user);
+        Task Proce_Delete_User(int id);
+        
     }
 }
 
