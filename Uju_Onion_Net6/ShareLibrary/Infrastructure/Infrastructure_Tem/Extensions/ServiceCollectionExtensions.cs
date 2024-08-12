@@ -6,6 +6,7 @@ using Application_Temp.Helpers;
 using Core_Temp.Interfaces;
 using Infrastructure_Temp.Repositories;
 using Application_Temp.Services;
+using Application_Temp.Interfaces;
 
 namespace Infrastructure_Temp.Extensions
 {
@@ -17,19 +18,22 @@ namespace Infrastructure_Temp.Extensions
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("chuoiketnoi")));
 
-            // Thêm các dịch vụ khác của Infrastructure nếu có
-           services.AddScoped<IUserRepository, UserRepository>();
+            // Đăng ký các repository của tầng Infrastructure
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
-            services.AddScoped<IPasswordHelper, PasswordHelper>(); // Nếu bạn đang sử dụng PasswordHelper trong Infrastructure
-                        
-            // services.AddScoped<IUserService, UserService>(); // Thêm UserService
+
+            // Đăng ký các helper nếu có (vd: PasswordHelper)
+            services.AddScoped<IPasswordHelper, PasswordHelper>(); 
         }
 
         public static void AddApplicationServices(this IServiceCollection services)
         {
-            // Đăng ký các dịch vụ Application
+            // Đăng ký các service của tầng Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBookService, BookService>();
+
+            // Đăng ký thêm các helper nếu cần thiết (ví dụ: TokenHelper)
+            services.AddScoped<ITokenHelper, TokenHelper>(); 
         }
     }
 }
