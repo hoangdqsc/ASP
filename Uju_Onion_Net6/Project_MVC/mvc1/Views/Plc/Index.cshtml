@@ -1,0 +1,72 @@
+@model mvc1.Models.PlcModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PLC Monitoring</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>PLC Monitoring</h1>
+
+    <!-- Form để kết nối -->
+    <form asp-action="Connect" method="post">
+        <div>
+            <label for="IpAddress">IP Address:</label>
+            <input type="text" id="IpAddress" name="IpAddress" value="@Model.IpAddress" required />
+        </div>
+        <div>
+            <label for="Port">Port:</label>
+            <input type="number" id="Port" name="Port" value="@Model.Port" required />
+        </div>
+        <div>
+            <label for="AccessCode">Access Code:</label>
+            <input type="text" id="AccessCode" name="AccessCode" value="@Model.AccessCode" />
+        </div>
+        <button type="submit">Connect</button>
+    </form>
+
+    <!-- Hiển thị thông tin PLC -->
+    <table>
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>Port</th>
+                <th>Connection Status</th>
+                <th>Data from PLC</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.IpAddress</td>
+                <td>@Model.Port</td>
+                <td>@Model.ConnectionStatus</td>
+                <td>@Model.DataFromPlc</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Form để ngắt kết nối -->
+    <form asp-action="Disconnect" method="post">
+        <button type="submit">Disconnect</button>
+    </form>
+</body>
+</html>
