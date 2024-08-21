@@ -1,4 +1,9 @@
-// Core_Plc/Entities/DeviceInfo.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace Core_Plc.Entities
 {
     public class DeviceInfo
@@ -8,14 +13,23 @@ namespace Core_Plc.Entities
         public ushort VendorID { get; set; }
         public ushort DeviceType { get; set; }
         public string Revision { get; set; }
+
     }
 }
 
-// Core_Plc/Interfaces/IPlcRepository.cs
+
+using Core_Plc.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+
 namespace Core_Plc.Interfaces
 {
-    public interface IPlcRepository
-    {
+    public interface IPlcService
+        {
         Task<DeviceInfo> GetDeviceInfoAsync(string ipAddress);
         Task<byte[]> GetInstanceDataAsync(string ipAddress, int instance);
     }
@@ -23,12 +37,122 @@ namespace Core_Plc.Interfaces
 
 
 
-// Application_Plc/Services/PlcService.cs
+using Core_Plc.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core_Plc.Interfaces
+{
+    public interface IPlcRepository
+    {
+        Task<DeviceInfo> GetDeviceInfoAsync(string ipAddress);
+        Task<byte[]> GetInstanceDataAsync(string ipAddress, int instance);
+
+    }
+}
+
+
+using Core_Plc.Entities;
+using Core_Plc.Interfaces;
+using Microsoft.Extensions.Logging;
+using Sres.Net.EEIP;
+using System;
+using System.Threading.Tasks;
+
+namespace Infratructure_Plc.Repositories
+{
+    public class PlcRepository : IPlcRepository
+    {
+        private readonly ILogger<PlcRepository> _logger;
+
+        public PlcRepository(ILogger<PlcRepository> logger)
+        {
+            _logger = logger;
+        }
+
+        public async Task<DeviceInfo> GetDeviceInfoAsync(string ipAddress)
+        {
+            EEIPClient eeipClient = null;
+
+            try
+            {
+                eeipClient = new EEIPClient();
+                eeipClient.IPAddress = ipAddress;
+                eeipClient.RegisterSession();
+
+                var identity = eeipClient.IdentityObject;
+
+                return new DeviceInfo
+                {
+                    ProductName = identity.ProductName,
+                    ProductCode = identity.ProductCode,
+                    VendorID = identity.VendorID,
+                    DeviceType = identity.DeviceType,
+                    Revision = identity.Revision.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving device information");
+                throw;
+            }
+            finally
+            {
+                // Giải phóng tài nguyên nếu không phải là null
+                if (eeipClient != null)
+                {
+                    eeipClient.UnRegisterSession();
+                }
+            }
+        }
+
+        public async Task<byte[]> GetInstanceDataAsync(string ipAddress, int instance)
+        {
+            EEIPClient eeipClient = null;
+
+            try
+            {
+                eeipClient = new EEIPClient();
+                eeipClient.IPAddress = ipAddress;
+                eeipClient.RegisterSession();
+
+                return eeipClient.AssemblyObject.getInstance(instance);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving instance data");
+                throw;
+            }
+            finally
+            {
+                // Giải phóng tài nguyên nếu không phải là null
+                if (eeipClient != null)
+                {
+                    eeipClient.UnRegisterSession();
+                }
+            }
+        }
+    }
+}
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using Core_Plc.Entities;
 using Core_Plc.Interfaces;
 
+
 namespace Application_Plc.Services
 {
+
     public class PlcService : IPlcService
     {
         private readonly IPlcRepository _plcRepository;
@@ -48,76 +172,95 @@ namespace Application_Plc.Services
             return await _plcRepository.GetInstanceDataAsync(ipAddress, instance);
         }
     }
-}
 
 
 
-// Infratructure_Plc/Repositories/PlcRepository.cs
-using Core_Plc.Entities;
-using Core_Plc.Interfaces;
-using Sres.Net.EEIP;
 
-namespace Infratructure_Plc.Repositories
-{
-    public class PlcRepository : IPlcRepository
+
+
+
+    /*
+    public class PlcService : IPlcService
     {
-        public async Task<DeviceInfo> GetDeviceInfoAsync(string ipAddress)
+        private readonly IPlcRepository _plcRepository;
+
+        public PlcService(IPlcRepository plcRepository)
         {
-            try
-            {
-                EEIPClient eeipClient = new EEIPClient();
-                eeipClient.IPAddress = ipAddress;
-                eeipClient.RegisterSession();
-
-                var identity = eeipClient.IdentityObject;
-
-                var deviceInfo = new DeviceInfo
-                {
-                    ProductName = identity.ProductName,
-                    ProductCode = identity.ProductCode,
-                    VendorID = identity.VendorID,
-                    DeviceType = identity.DeviceType,
-                    Revision = identity.Revision.ToString()
-                };
-
-                eeipClient.UnRegisterSession();
-                return deviceInfo;
-            }
-            catch (Exception ex)
-            {
-                // Log or handle exception
-                throw new Exception("Error retrieving device information", ex);
-            }
+            _plcRepository = plcRepository;
         }
 
-        public async Task<byte[]> GetInstanceDataAsync(string ipAddress, int instance)
+     
+
+        public async Task<PLCData> Get_DData(string ipAddress, int port, ushort startAddress, ushort numberOfPoints)
         {
-            try
-            {
-                EEIPClient eeipClient = new EEIPClient();
-                eeipClient.IPAddress = ipAddress;
-                eeipClient.RegisterSession();
-
-                byte[] data = eeipClient.AssemblyObject.getInstance(instance);
-
-                eeipClient.UnRegisterSession();
-                return data;
-            }
-            catch (Exception ex)
-            {
-                // Log or handle exception
-                throw new Exception("Error retrieving instance data", ex);
-            }
+            return await _plcRepository.Get_DData(ipAddress, port, startAddress, numberOfPoints);
         }
-    }
+
+
+
+
+        public async Task<string> Getname(string ipAddress, int port)
+        {
+
+            // Use the repository to get the device name (assuming you have such functionality)
+            var deviceInfo = await _plcRepository(ipAddress, port);
+            return deviceInfo;
+        }
+        /*
+public async Task<string> GetStatus(string ipAddress, int port)
+{
+    var deviceInfo = await _plcRepository.GetDeviceInfoAsync(ipAddress, port);
+    return deviceInfo.DeviceStatus;
+
+}
+public async Task<string> GetConnectionStatus(string ipAddress, int port)
+{
+    var deviceInfo = await _plcRepository.GetDeviceInfoAsync(ipAddress, port);
+    return deviceInfo.ConnectionStatus;
+}
+
+public async Task<string> GetDataFromPlc(string ipAddress, int port)
+{
+    var deviceInfo = await _plcRepository.GetDeviceInfoAsync(ipAddress, port);
+    return deviceInfo.DataFromPlc;
+}
+
+public async Task<string> GetAccessCode(string ipAddress, int port)
+{
+    var deviceInfo = await _plcRepository.GetDeviceInfoAsync(ipAddress, port);
+    return deviceInfo.AccessCode;
+}
+
+public async Task<string> GetVendorID(string ipAddress, int port)
+{
+    var deviceInfo = await _plcRepository.GetDeviceInfoAsync(ipAddress, port);
+    return deviceInfo.VendorID;
+}
+
+public async Task<string> GetDeviceType(string ipAddress, int port)
+{
+    var deviceInfo = await _plcRepository.GetDeviceInfoAsync(ipAddress, port);
+    return deviceInfo.DeviceType;
 }
 
 
-// Presentation_Plc/Controllers/PlcController.cs
-using Application_Plc.Services;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation_Plc.Controllers
+        public Task<PLCError> Get_All(string ipAddress, int port)
+        {
+            throw new NotImplementedException();
+        }
+    */
+
+
+}
+
+
+using Application_Plc.Services;
+using Core_Plc.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+namespace mvc1.Controllers
 {
     public class PlcController : Controller
     {
@@ -144,18 +287,26 @@ namespace Presentation_Plc.Controllers
 
 
 
+@model Core_Plc.Entities.DeviceInfo
+
+<h2>Device Information</h2>
+<p>Product Name: @Model.ProductName</p>
+<p>Product Code: @Model.ProductCode</p>
+<p>Vendor ID: @Model.VendorID</p>
+<p>Device Type: @Model.DeviceType</p>
+<p>Revision: @Model.Revision</p>
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using mvc1.Services;
 using Core_Plc.Interfaces;
 using Application_Plc.Services;
 using Infratructure_Plc.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cấu hình Serilog
+// Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("Logs/myapp.log", rollingInterval: RollingInterval.Day)
@@ -164,22 +315,9 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
 
-// Đăng ký IPlcRepository và lớp triển khai của nó
+// Register services
 builder.Services.AddScoped<IPlcRepository, PlcRepository>();
-
-// Register your IPlcService implementation
 builder.Services.AddScoped<IPlcService, PlcService>();
-
-
-// Đăng ký ModbusTcpClient với ILogger
-builder.Services.AddSingleton<ModbusTcpClient>(sp =>
-{
-    var logger = sp.GetRequiredService<ILogger<ModbusTcpClient>>();
-    return new ModbusTcpClient("192.168.1.10", 8500, logger);
-});
-
-
-
 
 builder.Services.AddControllersWithViews();
 
@@ -198,18 +336,9 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=plc}/{action=Index}/{id?}");
+    pattern: "{controller=Plc}/{action=Index}/{id?}");
 
 app.Run();
 
 
 
-
-@model Core_Plc.Entities.DeviceInfo
-
-<h2>Device Information</h2>
-<p>Product Name: @Model.ProductName</p>
-<p>Product Code: @Model.ProductCode</p>
-<p>Vendor ID: @Model.VendorID</p>
-<p>Device Type: @Model.DeviceType</p>
-<p>Revision: @Model.Revision</p>
