@@ -151,7 +151,8 @@ mkdir template_Onion_hoang
 	# ***************************** TẢI FILE VỀ DỰ ÁN ********************************************
 	
 	# Định nghĩa đường dẫn cơ bản
-	$basePath = "D:\ASP\m\template_Onion_hoang"
+	# $basePath = "D:\ASP\m\template_Onion_hoang"
+	$basePath = (Get-Location).Path
 
 	# Định nghĩa đường dẫn chi tiết cho từng thư mục
 	$paths = @{
