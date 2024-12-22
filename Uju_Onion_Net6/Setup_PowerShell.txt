@@ -138,7 +138,7 @@ mkdir template_Onion_hoang
 			# Thêm tham chiếu đến Infrastructure_Temp
 			dotnet add reference ../../ShareLibrary/Infrastructure/Infrastructure_Temp/Infrastructure_Temp.csproj
 			# Thêm tham chiếu đến Core_Temp
-			dotnet add reference ../../Core/Core_Temp/Core_Temp.csproj
+			dotnet add reference ../../ShareLibrary/Core/Core_Temp/Core_Temp.csproj
 	cd ../..
 			# Di chuyển vào thư mục Tests_FunctionalTests
 			cd ShareLibrary\Tests\Tests_FunctionalTests
